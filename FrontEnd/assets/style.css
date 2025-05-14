@@ -174,9 +174,20 @@ nav li {
   font-size: 1.2em;
 }
 
-li:hover {
+nav li:hover,
+nav li:hover > a,
+nav li > a:hover {
   color: #b1663c;
 }
+
+nav li > a {
+  color: inherit;
+  text-decoration: none;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
 #introduction {
   display: flex;
   align-items: center;
@@ -264,10 +275,39 @@ footer nav ul {
 }
 
 /* ajout css */
-
-.login{
-	font-weight: bold;
+/*boutons filtres*/
+.login {
+  font-weight: bold;
 }
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 50px;
+}
+
+button {
+  border-radius: 60px;
+  color: #1d6154;
+  border: 1px solid #1d6154;
+  background-color: white;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  padding: 9px;
+}
+
+.all-button {
+  border-radius: 60px;
+  color: #1d6154;
+  border: 1px solid #1d6154;
+  background-color: white;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  padding: 9px;
+}
+
+/*page login*/
 
 .login-container {
   margin: 150px auto;

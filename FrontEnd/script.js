@@ -11,26 +11,11 @@ const renderFilterButtons = (categories) => {
   const filtersContainer = document.createElement("div");
   filtersContainer.classList.add("filters");
 
-  // Add CSS to style the filters container
-  filtersContainer.style.display = "flex";
-  filtersContainer.style.justifyContent = "center";
-  filtersContainer.style.gap = "10px";
-  filtersContainer.style.marginBottom = "50px";
-
   // Create "All" button first
   const allButton = document.createElement("button");
   allButton.textContent = "Tous";
   allButton.classList.add("filter-btn", "active");
   allButton.dataset.categoryId = "all";
-
-  // Add CSS to style the "All" button (same as category buttons)
-  allButton.style.borderRadius = "60px";
-  allButton.style.color = "#1D6154";
-  allButton.style.border = "1px solid #1D6154";
-  allButton.style.backgroundColor = "white";
-  allButton.style.fontFamily = "Syne";
-  allButton.style.fontWeight = "700";
-  allButton.style.padding = "9px";
 
   filtersContainer.appendChild(allButton);
 
@@ -40,15 +25,6 @@ const renderFilterButtons = (categories) => {
     button.textContent = category.name;
     button.classList.add("filter-btn");
     button.dataset.categoryId = category.id;
-
-    //Add CSS to style button
-    button.style.borderRadius = "60px";
-    button.style.color = "#1D6154";
-    button.style.border = "1px solid #1D6154";
-    button.style.backgroundColor = "white";
-    button.style.fontFamily = "Syne";
-    button.style.fontWeight = "700";
-    button.style.padding = "9px";
 
     filtersContainer.appendChild(button);
   });
