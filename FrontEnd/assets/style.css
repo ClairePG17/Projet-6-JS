@@ -446,7 +446,7 @@ input[type="password"] {
   padding: 26px 105px 45px 105px;
   overflow: auto;
   border-radius: 10px;
-  width: calc(630px - 105*2px);
+  width: calc(630px - 105 * 2px);
   height: calc(688px - 26px - 45px);
 }
 
@@ -543,6 +543,7 @@ input[type="password"] {
 
 .btn-ok {
   background-color: #b3b3b3;
+  border: 1px solid #b3b3b3;
   border-radius: 60px;
   padding: 10px 50px;
   color: #fff;
@@ -552,20 +553,55 @@ input[type="password"] {
   justify-content: center;
 }
 
-.add-photo{
+.add-photo {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 30px;
   gap: 7px;
-  background-color: #E8F1F6;
-  padding: 19px 0;
+  background-color: #e8f1f6;
+  height: 169px;
   border-radius: 3px;
 }
 
-.add-photo button{
-  background-color: #CBD6DC;
-  border: 1px solid #CBD6DC;
+.add-photo .img {
+  height: 169px;
+  width: 129px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f1f6;
+  border-radius: 3px;
+}
+
+.add-photo .img .image-preview {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  display: block;
+  margin-top: 19px;
+  transition:
+    width 0.2s,
+    height 0.2s,
+    margin 0.2s;
+}
+
+.add-photo .img .image-preview.is-uploaded {
+  width: 129px;
+  height: 169px;
+  margin-top: 0;
+  object-fit: cover;
+}
+
+.add-photo .photo-info {
+  margin-bottom: 19px;
+  font-size: 10px;
+}
+
+.add-photo .choose-image-btn {
+  background-color: #cbd6dc;
+  border: 1px solid #cbd6dc;
   font-size: 14px;
+  font-weight: 500;
   padding: 10px 33px;
 }

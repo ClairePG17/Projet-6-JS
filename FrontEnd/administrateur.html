@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Work+Sans&display=swap"
       rel="stylesheet"
     />
     <meta name="description" content="" />
@@ -112,6 +112,7 @@
             <a href="#modal2" class="btn-add">Ajouter une photo</a>
           </div>
         </div>
+
         <div id="modal2" class="modal2" style="display: none">
           <div class="modal-header">
             <a href="#" class="back-btn">
@@ -122,27 +123,22 @@
             </a>
           </div>
           <h3 class="modal__title">Ajout photo</h3>
-          <div class="modal-form">
+          <form id="add-work-form">
             <div class="add-photo">
               <div class="img">
-                <img src="assets/icons/photo.png" alt="add photo" />
+                <img class="image-preview" id="image-preview" src="assets/icons/photo.png" alt="add photo" />
               </div>
-              <button>+ Ajouter photo</button>
-              <p>jpg, png : 4mo max</p>
+              <input type="file" id="image-input" accept="image/*" style="display:none;" />
+              <button class="choose-image-btn" type="button" id="choose-image-btn">+ Ajouter photo</button>
+              <p class="photo-info" id="photo-info">jpg, png : 4mo max</p>
             </div>
-            <form action="#" method="post">
-              <label for="titre">Titre</label>
-              <input type="text" name="titre" id="titre" />
-              <label for="cat">Catégorie :</label>
-              <select id="cat" name="cat">
-                <!--Afficher les catégories via JS-->
-              </select>
-            </form>
-          </div>
-          <div class="bottom-ligne"></div>
-          <div class="modal-footer2">
-            <a href="#" class="btn-ok">Valider</a>
-          </div>
+            <label for="titre">Titre</label>
+            <input type="text" name="titre" id="titre" />
+            <label for="cat">Catégorie :</label>
+            <select id="cat" name="cat"></select>
+            <div class="bottom-ligne"></div>
+            <button type="submit" class="btn-ok">Valider</button>
+          </form>
         </div>
       </div>
     </aside>

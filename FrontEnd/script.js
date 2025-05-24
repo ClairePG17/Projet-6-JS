@@ -167,12 +167,20 @@ document.querySelector(".btn-add").addEventListener("click", function (e) {
   e.preventDefault();
   modal1.style.display = "none";
   modal2.style.display = "";
+  populateCategoryDropdown();
 });
 
 document.querySelector(".back-btn").addEventListener("click", function (e) {
   e.preventDefault();
   modal2.style.display = "none";
   modal1.style.display = "";
+
+  if (addWorkForm) {
+    addWorkForm.reset();
+    imagePreview.src = "assets/icons/photo.png";
+    imagePreview.classList.remove('is-uploaded');
+    updatePhotoControlsVisibility();
+  }
 });
 
 let modal = null;
@@ -240,6 +248,9 @@ const openModal = function (e) {
 
   modal.querySelector(".js-stop-propagation").addEventListener("click", stopPropagation);
 
+  modal1.style.display = "";
+  modal2.style.display = "none";
+
   updateModalGallery();
 };
 
@@ -257,6 +268,14 @@ const closeModal = function (e) {
   });
 
   modal.querySelector(".js-stop-propagation").removeEventListener("click", stopPropagation);
+
+  if (modal2.style.display !== "none" && addWorkForm) {
+    addWorkForm.reset();
+    imagePreview.src = "assets/icons/photo.png";
+    imagePreview.classList.remove('is-uploaded');
+    updatePhotoControlsVisibility();
+  }
+
   modal = null;
 };
 
@@ -273,3 +292,122 @@ window.addEventListener("keydown", function (e) {
     closeModal(e);
   }
 });
+
+//modal2 
+async function populateCategoryDropdown() {
+    const categories = await fetchData(`${API_BASE_URL}/categories`);
+    const select = document.getElementById('cat');
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat.id;
+      option.textContent = cat.name; 
+      select.appendChild(option);
+    });
+  }
+
+//update photo
+const imageInput = document.getElementById('image-input');
+const imagePreview = document.getElementById('image-preview');
+const chooseImageBtn = document.getElementById('choose-image-btn');
+const photoInfo = document.getElementById('photo-info');
+const addWorkForm = document.getElementById('add-work-form');
+
+
+// Fonction pour afficher/masquer le bouton et le paragraphe
+function updatePhotoControlsVisibility() {
+  if (imageInput.files.length > 0) {
+    chooseImageBtn.style.display = "none";
+    photoInfo.style.display = "none";
+  } else {
+    chooseImageBtn.style.display = "";
+    photoInfo.style.display = "";
+  }
+}
+
+chooseImageBtn.addEventListener('click', function(e) {
+  e.preventDefault();
+  imageInput.click();
+});
+
+imageInput.addEventListener('change', function() {
+  const file = imageInput.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      imagePreview.src = e.target.result;
+      imagePreview.classList.add('is-uploaded');
+      updatePhotoControlsVisibility();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    imagePreview.src = 'assets/icons/photo.png';
+    imagePreview.classList.remove('is-uploaded');
+    updatePhotoControlsVisibility();
+  }
+});
+
+// (Optionnel) Lors du reset du formulaire
+if (addWorkForm) {
+  addWorkForm.addEventListener('reset', function() {
+    imagePreview.src = 'assets/icons/photo.png';
+    imagePreview.classList.remove('is-uploaded');
+    imageInput.value = "";
+    updatePhotoControlsVisibility();
+  });
+}
+
+
+// Initialise la visibilité au chargement
+updatePhotoControlsVisibility();
+
+
+//call API
+
+addWorkForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const title = document.getElementById('titre').value.trim();
+  const category = document.getElementById('cat').value;
+  const imageFile = imageInput.files[0];
+
+  if (!title || !category || !imageFile) {
+    alert('Veuillez remplir tous les champs et choisir une image.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('category', category);
+  formData.append('image', imageFile);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/works`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem(AUTH_TOKEN_KEY)
+        // NE PAS mettre Content-Type ici, fetch le gère avec FormData !
+      },
+      body: formData
+    });
+
+    if (response.ok) {
+      const newWork = await response.json();
+      worksData.push(newWork);
+      renderWorks(worksData);
+      updateModalGallery();
+      // Optionnel: reset le formulaire et l’aperçu
+      addWorkForm.reset();
+      imagePreview.src = "assets/icons/photo.png";
+      // Fermer la modale si souhaité
+      // modal2.style.display = "none";
+      // modal1.style.display = "";
+    } else if (response.status === 401) {
+      alert('Non autorisé. Veuillez vous reconnecter.');
+    } else {
+      alert('Erreur lors de l\'ajout du projet.');
+    }
+  } catch (err) {
+    alert('Erreur réseau');
+  }
+});
+
