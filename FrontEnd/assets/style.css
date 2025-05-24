@@ -610,7 +610,8 @@ input[type="password"] {
   padding: 10px 33px;
 }
 
-#titre, #cat{
+#titre,
+#cat {
   box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
   width: 42opx;
   height: 51px;
@@ -618,16 +619,16 @@ input[type="password"] {
   border: none;
   outline: none;
   font-size: 1rem;
-  padding: 20px;
   box-sizing: border-box;
+  padding: 10px 20px;
 }
 
-#cat{
-  appearance: none; 
-  background: url('icons/chevron-down.svg') no-repeat right 20px center/11px 11px;
+#cat {
+  appearance: none;
+  background: url("icons/chevron-down.svg") no-repeat right 20px center/11px 11px;
 }
 
-.add-photo label{
+.add-photo label {
   font-family: "Work Sans";
   font-weight: 500;
   font-size: 14px;
