@@ -1,78 +1,75 @@
 const API_BASE_URL = "http://localhost:5678/api";
 const AUTH_TOKEN_KEY = "authToken";
+let worksData = [];
 
 const gallery = document.querySelector(".gallery");
 const portfolioSection = document.getElementById("portfolio");
 const portfolioTitle = portfolioSection?.querySelector("h2");
 
-// 1. Login management 
-if (document.querySelector(".login-container")) {
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector(".login-container form");
-    const errorMsg = createErrorMessage(form);
+// 1. Login management
+const form = document.querySelector(".login-container form");
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      errorMsg.textContent = "";
+if (form) {
+  const errorMsg = createErrorMessage(form);
 
-      try {
-        // Try to authenticate the user
-        const { token } = await authenticateUser({
-          email: form.email.value.trim(),
-          password: form.password.value
-        });
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    errorMsg.textContent = "";
 
-        // Store the token in localStorage
-        localStorage.setItem(AUTH_TOKEN_KEY, token);
-        // Redirect to homepage
-        window.location.href = "index.html";
-      } catch (error) {
-        // Handle login error
-        handleLoginError(error, errorMsg);
-      }
-    });
-  });
-}
-
-// 2. Gallery management (for index.html)
-if (gallery && portfolioSection) {
-  document.addEventListener("DOMContentLoaded", async () => {
     try {
-      // Fetch works and categories in parallel
-      const [works, categories] = await Promise.all([
-        fetchData(`${API_BASE_URL}/works`),
-        fetchData(`${API_BASE_URL}/categories`)
-      ]);
+      const { token } = await authenticateUser({
+        email: form.email.value.trim(),
+        password: form.password.value,
+      });
 
-      // Render works and filter buttons
-      renderWorks(works);
-      renderFilterButtons(categories);
-      setupFilters();
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      window.location.href = "administrateur.html";
+
     } catch (error) {
-      // Handle fetch error
-      handleFetchError(error);
+      handleLoginError(error, errorMsg);
     }
   });
 }
 
-// Utility functions
+// 2. Render galery works
+(async function () {
+  try {
+    const [works, categories] = await Promise.all([
+      fetchData(`${API_BASE_URL}/works`),
+      fetchData(`${API_BASE_URL}/categories`),
+    ]);
+
+    worksData = works;
+    renderWorks(worksData);
+    renderFilterButtons(categories);
+    setupFilters();
+
+  } catch (error) {
+    handleFetchError(error);
+  }
+})();
+
+// 3. Utility functions and Call API
 
 // Authenticate user and return token
 async function authenticateUser(credentials) {
   const response = await fetch(`${API_BASE_URL}/users/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials)
+    body: JSON.stringify(credentials),
   });
 
   if (!response.ok) throw new Error("Authentication error");
+  
   return response.json();
 }
 
 // Fetch data from API and return JSON
 async function fetchData(url) {
   const response = await fetch(url);
+
   if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
   return response.json();
 }
 
@@ -80,51 +77,62 @@ async function fetchData(url) {
 function createErrorMessage(parent) {
   const errorMsg = document.createElement("div");
   errorMsg.className = "error-message";
-  errorMsg.style.cssText = "color: red; margin-top: 10px;";
   parent.appendChild(errorMsg);
   return errorMsg;
 }
 
 // Render works in the gallery
 function renderWorks(works) {
-  gallery.innerHTML = works.map(work => `
+  gallery.innerHTML = works
+
+    .map(
+      (work) => `
     <figure data-category-id="${work.categoryId}">
       <img src="${work.imageUrl}" alt="${work.title}">
       <figcaption>${work.title}</figcaption>
     </figure>
-  `).join("");
+  `
+    )
+    .join("");
 }
 
 // Render filter buttons below the portfolio title
 function renderFilterButtons(categories) {
   const filtersContainer = document.createElement("div");
+
   filtersContainer.className = "filters";
-  
+
   const buttons = [
     createFilterButton("Tous", "all", true),
-    ...categories.map(cat => createFilterButton(cat.name, cat.id))
+    ...categories.map((cat) => createFilterButton(cat.name, cat.id)),
   ];
 
-  buttons.forEach(btn => filtersContainer.appendChild(btn));
+  buttons.forEach((btn) => filtersContainer.appendChild(btn));
+
   portfolioTitle.after(filtersContainer);
+
+  if (window.location.pathname.endsWith("administrateur.html")) {
+    filtersContainer.style.display = "none";
+  }
 }
 
 // Create a filter button element
 function createFilterButton(text, categoryId, isActive = false) {
   const button = document.createElement("button");
+
   button.className = `filter-btn ${isActive ? "active" : ""}`;
   button.textContent = text;
   button.dataset.categoryId = categoryId;
+
   return button;
 }
 
 // Set up event listeners for filter buttons
 function setupFilters() {
-  document.querySelectorAll(".filter-btn").forEach(button => {
+  document.querySelectorAll(".filter-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach(btn => 
-        btn.classList.remove("active"));
-      
+      document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
+
       button.classList.add("active");
       filterWorks(button.dataset.categoryId);
     });
@@ -133,24 +141,101 @@ function setupFilters() {
 
 // Filter works in the gallery by category
 function filterWorks(categoryId) {
-  document.querySelectorAll(".gallery figure").forEach(figure => {
-    figure.style.display = 
-      categoryId === "all" || figure.dataset.categoryId === categoryId 
-        ? "block" 
-        : "none";
+  document.querySelectorAll(".gallery figure").forEach((figure) => {
+    figure.style.display =
+      categoryId === "all" || figure.dataset.categoryId === categoryId ? "block" : "none";
   });
 }
 
 // Handle login errors and display messages
 function handleLoginError(error, errorMsg) {
-  errorMsg.textContent = error.message.includes("Authentication") 
-    ? "Identifiants incorrects" 
+  errorMsg.textContent = error.message.includes("Authentication")
+    ? "Erreur dans l’identifiant ou le mot de passe"
     : "Erreur de connexion";
-  console.error(error);
 }
 
 // Handle fetch errors and display messages
 function handleFetchError(error) {
   gallery.innerHTML = `<p>Erreur de chargement : ${error.message}</p>`;
-  console.error("Fetch error:", error);
 }
+
+// 4. Set up modal
+const modal1 = document.getElementById("modal1");
+const modal2 = document.getElementById("modal2");
+
+document.querySelector(".btn-add").addEventListener("click", function (e) {
+  e.preventDefault();
+  modal1.style.display = "none";
+  modal2.style.display = "";
+});
+
+document.querySelector(".back-btn").addEventListener("click", function (e) {
+  e.preventDefault();
+  modal2.style.display = "none";
+  modal1.style.display = "";
+});
+
+let modal = null;
+
+function renderImagesInModal() {
+  const modalGallery = document.querySelector(".modal-gallery");
+
+  modalGallery.innerHTML = worksData
+    .map(
+      (work) => `
+      <figure data-category-id="${work.categoryId}">
+        <img src="${work.imageUrl}" alt="${work.title}" class="modal-img">
+      </figure>
+    `
+    )
+    .join("");
+}
+
+const openModal = function (e) {
+  e.preventDefault();
+
+  modal = document.querySelector(e.target.getAttribute("href"));
+  modal.style.display = null;
+  modal.removeAttribute("aria-hidden");
+  modal.setAttribute("aria-modal", "true");
+  modal.addEventListener("click", closeModal);
+
+  modal.querySelectorAll(".close-btn").forEach((btn) => {
+    btn.addEventListener("click", closeModal);
+  });
+
+  modal.querySelector(".js-stop-propagation").addEventListener("click", stopPropagation);
+
+  renderImagesInModal();
+};
+
+const closeModal = function (e) {
+  if (modal === null) return;
+  e.preventDefault();
+  
+  modal.style.display = "none";
+  modal.setAttribute("aria-hidden", "true");
+  modal.removeAttribute("aria-modal");
+  modal.removeEventListener("click", closeModal);
+
+  modal.querySelectorAll(".close-btn").forEach((btn) => {
+    btn.removeEventListener("click", closeModal);
+  });
+
+  modal.querySelector(".js-stop-propagation").removeEventListener("click", stopPropagation);
+  modal = null;
+};
+
+const stopPropagation = function (e) {
+  e.stopPropagation();
+};
+
+document.querySelectorAll(".js-modal").forEach((a) => {
+  a.addEventListener("click", openModal);
+});
+
+window.addEventListener("keydown", function (e) {
+  if (e.key === "Escape" || e.key === "Esc") {
+    closeModal(e);
+  }
+});
