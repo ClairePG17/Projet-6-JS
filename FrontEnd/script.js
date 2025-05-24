@@ -179,17 +179,51 @@ let modal = null;
 
 function renderImagesInModal() {
   const modalGallery = document.querySelector(".modal-gallery");
-
   modalGallery.innerHTML = worksData
     .map(
       (work) => `
-      <figure data-category-id="${work.categoryId}">
-        <img src="${work.imageUrl}" alt="${work.title}" class="modal-img">
-      </figure>
-    `
+        <figure data-category-id="${work.categoryId}" data-id="${work.id}" style="position: relative;">
+          <img src="${work.imageUrl}" alt="${work.title}" class="modal-img" />
+          <img src="assets/icons/delete-work.svg" alt="Supprimer" class="delete-btn" />
+        </figure>
+      `
     )
     .join("");
 }
+
+function addDeleteListeners() {
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async function (e) {
+      e.stopPropagation();
+      const figure = e.target.closest('figure');
+      const workId = figure.getAttribute('data-id');
+      try {
+        const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem(AUTH_TOKEN_KEY),
+            'Accept': 'application/json',
+          }
+        });
+        if ((response.ok)) {
+          figure.remove();
+          worksData = worksData.filter(work => work.id != workId);
+          renderWorks(worksData);
+        } else {
+          alert('Erreur lors de la suppression.');
+        }
+      } catch (err) {
+        alert('Erreur réseau');
+      }
+    });
+  });
+}
+
+function updateModalGallery() {
+  renderImagesInModal();
+  addDeleteListeners();
+}
+
 
 const openModal = function (e) {
   e.preventDefault();
@@ -206,7 +240,7 @@ const openModal = function (e) {
 
   modal.querySelector(".js-stop-propagation").addEventListener("click", stopPropagation);
 
-  renderImagesInModal();
+  updateModalGallery();
 };
 
 const closeModal = function (e) {
