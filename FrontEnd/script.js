@@ -295,15 +295,30 @@ window.addEventListener("keydown", function (e) {
 
 //modal2 
 async function populateCategoryDropdown() {
-    const categories = await fetchData(`${API_BASE_URL}/categories`);
-    const select = document.getElementById('cat');
-    categories.forEach(cat => {
+  const categories = await fetchData(`${API_BASE_URL}/categories`);
+  const select = document.getElementById('cat');
+  // Vide d'abord le select pour éviter les doublons
+  select.innerHTML = '';
+  // Ajoute l'option vide par défaut
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.textContent = '';
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+
+  // Ajoute les catégories sans doublons
+  const ids = new Set();
+  categories.forEach(cat => {
+    if (!ids.has(cat.id)) {
       const option = document.createElement('option');
       option.value = cat.id;
-      option.textContent = cat.name; 
+      option.textContent = cat.name;
       select.appendChild(option);
-    });
-  }
+      ids.add(cat.id);
+    }
+  });
+}
 
 //update photo
 const imageInput = document.getElementById('image-input');
