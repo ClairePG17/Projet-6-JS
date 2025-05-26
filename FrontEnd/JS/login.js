@@ -4,8 +4,7 @@ import { authenticateUser } from "./call-API.js";
 export const API_BASE_URL = "http://localhost:5678/api";
 export const AUTH_TOKEN_KEY = "authToken";
 
-if (form) {
-  form.addEventListener("submit", async (event) => {
+  form?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     try {
@@ -21,4 +20,4 @@ if (form) {
       handleLoginError(error, errorMsg);
     }
   });
-}
+

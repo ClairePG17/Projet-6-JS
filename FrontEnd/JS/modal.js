@@ -123,7 +123,6 @@ async function populateCategoryDropdown() {
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
     defaultOption.textContent = "";
-    defaultOption.selected = true;
     select.appendChild(defaultOption);
 
     // Use of Set to avoid duplication

@@ -8,7 +8,7 @@ export function renderWorks(works) {
   gallery.innerHTML = works
     .map(
       (work) => `
-        <figure data-category-id="${work.categoryId}">
+        <figure class="category-${work.categoryId}">
           <img src="${work.imageUrl}" alt="${work.title}">
           <figcaption>${work.title}</figcaption>
         </figure>
@@ -55,10 +55,11 @@ export function renderFilterButtons(categories) {
 
 function filterWorks(categoryId) {
   document.querySelectorAll(".gallery figure").forEach((figure) => {
-    figure.style.display =
-      categoryId === "all" || figure.getAttribute("data-category-id") === String(categoryId)
-        ? "block"
-        : "none";
+    if (categoryId === "all" || figure.classList.contains(`category-${categoryId}`)) {
+      figure.style.display = "block";
+    } else {
+      figure.style.display = "none";
+    }
   });
 }
 
