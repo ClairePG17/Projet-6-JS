@@ -1,11 +1,8 @@
-// JS/gallery.js
-
 import { fetchData } from "./call-API.js";
 import { API_BASE_URL } from "./login.js";
 import {
   renderWorks,
   renderFilterButtons,
-  setupFilters,
   handleFetchError,
 } from "./utility-fonctions.js";
 
@@ -21,10 +18,12 @@ export async function initGallery() {
       fetchData(`${API_BASE_URL}/works`),
       fetchData(`${API_BASE_URL}/categories`),
     ]);
+
     worksData = works;
+
     renderWorks(worksData);
     renderFilterButtons(categories);
-    setupFilters();
+
   } catch (error) {
     handleFetchError(error);
   }

@@ -1,54 +1,54 @@
-// JS/utility-fonctions.js
+export const form = document.querySelector(".login-container form");
+export const errorMsg = form ? form.querySelector(".error-message") : null;
 
-export function createErrorMessage(parent) {
-  const errorMsg = document.createElement("div");
-  errorMsg.className = "error-message";
-  parent.appendChild(errorMsg);
-  return errorMsg;
-}
-
+// 1. Creation Gallery
 export function renderWorks(works) {
   const gallery = document.querySelector(".gallery");
+
   gallery.innerHTML = works
     .map(
-      (work) => `<figure data-id="${work.id}" data-category-id="${work.categoryId}">
-      <img src="${work.imageUrl}" alt="${work.title}">
-      <figcaption>${work.title}</figcaption>
-    </figure>`
+      (work) => `
+        <figure data-category-id="${work.categoryId}">
+          <img src="${work.imageUrl}" alt="${work.title}">
+          <figcaption>${work.title}</figcaption>
+        </figure>
+      `
     )
     .join("");
 }
 
+// 2. Creation Filter
 export function renderFilterButtons(categories) {
-  const portfolioTitle = document.getElementById("portfolio")?.querySelector("h2");
-  if (!portfolioTitle) return;
-  const filtersContainer = document.createElement("div");
-  filtersContainer.className = "filters";
-  const buttons = [
-    createFilterButton("Tous", "all", true),
-    ...categories.map((cat) => createFilterButton(cat.name, cat.id)),
-  ];
-  buttons.forEach((btn) => filtersContainer.appendChild(btn));
-  portfolioTitle.after(filtersContainer);
-  if (window.location.pathname.endsWith("administrateur.html")) {
-    filtersContainer.style.display = "none";
+  const filtersContainer = document.querySelector(".filters");
+
+  // Table to link button <-> category
+  const btnCategories = [];
+
+  function createFilterButton(text, isActive = false) {
+    const button = document.createElement("button");
+    button.className = `filter-btn${isActive ? " active" : ""}`;
+    button.textContent = text;
+
+    return button;
   }
-}
 
-function createFilterButton(text, categoryId, isActive = false) {
-  const button = document.createElement("button");
-  button.className = `filter-btn ${isActive ? "active" : ""}`;
-  button.textContent = text;
-  button.dataset.categoryId = categoryId;
-  return button;
-}
+  // Filling the btnCategories table, (btn all is the one active by default)
+  const btnTous = createFilterButton("Tous", true);
+  filtersContainer.appendChild(btnTous);
+  btnCategories.push({ button: btnTous, categoryId: "all" });
 
-export function setupFilters() {
-  document.querySelectorAll(".filter-btn").forEach((button) => {
+  categories.forEach((cat) => {
+    const btn = createFilterButton(cat.name);
+    filtersContainer.appendChild(btn);
+    btnCategories.push({ button: btn, categoryId: cat.id });
+  });
+
+  btnCategories.forEach(({ button, categoryId }) => {
     button.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
+      btnCategories.forEach(({ button }) => button.classList.remove("active"));
       button.classList.add("active");
-      filterWorks(button.dataset.categoryId);
+
+      filterWorks(categoryId);
     });
   });
 }
@@ -56,10 +56,13 @@ export function setupFilters() {
 function filterWorks(categoryId) {
   document.querySelectorAll(".gallery figure").forEach((figure) => {
     figure.style.display =
-      categoryId === "all" || figure.dataset.categoryId === categoryId ? "block" : "none";
+      categoryId === "all" || figure.getAttribute("data-category-id") === String(categoryId)
+        ? "block"
+        : "none";
   });
 }
 
+// 3. Errors management
 export function handleLoginError(error, errorMsg) {
   errorMsg.textContent = error.message.includes("Authentication")
     ? "Erreur dans l’identifiant ou le mot de passe"
@@ -68,7 +71,5 @@ export function handleLoginError(error, errorMsg) {
 
 export function handleFetchError(error) {
   const gallery = document.querySelector(".gallery");
-  if (gallery) {
-    gallery.innerHTML = `<p>Erreur de chargement : ${error.message}</p>`;
-  }
+  gallery.innerHTML = `<p>Erreur de chargement : ${error.message}</p>`;
 }
