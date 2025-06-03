@@ -10,7 +10,6 @@ const openModal = function (e) {
   e.preventDefault();
 
   modal = document.getElementById("modal");
-  if (!modal) return;
 
   modal.style.display = null;
   modal.removeAttribute("aria-hidden");
@@ -29,7 +28,6 @@ const openModal = function (e) {
 };
 
 const closeModal = function (e) {
-  if (modal === null) return;
   e.preventDefault();
 
   modal.style.display = "none";
@@ -58,7 +56,6 @@ const closeModal = function (e) {
 //Modal1 : Delete work option
 function renderImagesInModal() {
   const modalGallery = document.querySelector(".modal-gallery");
-  if (!modalGallery) return;
 
   modalGallery.innerHTML = worksData
     .map(
@@ -116,7 +113,6 @@ async function populateCategoryDropdown() {
     const categories = await response.json();
 
     const select = document.getElementById("cat");
-    if (!select) return;
 
     select.innerHTML = "";
 
