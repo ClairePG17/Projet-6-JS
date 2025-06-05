@@ -1,5 +1,27 @@
 export const form = document.querySelector(".login-container form");
 export const errorMsg = form ? form.querySelector(".error-message") : null;
+import {AUTH_TOKEN_KEY } from "./login.js";
+
+// Index page : layout <-> administrator
+export function displayAdmin() {
+  const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
+  const editionHeader = document.querySelector(".edition-mode");
+  const modifier = document.querySelector(".portfolio__edition");
+  const filters = document.querySelector(".filters");
+  const portfolioHeader = document.querySelector(".portfolio__header");
+
+  if (token) {
+    editionHeader.style.display = null;
+    modifier.style.display = "flex";
+    filters.style.display = "none";
+    portfolioHeader.classList.add("edition");
+  } else {
+    editionHeader.style.display = "none";
+    modifier.style.display = "none";
+    filters.style.display = "flex";
+    portfolioHeader.classList.remove("edition");
+  }
+}
 
 // 1. Creation Gallery
 export function renderWorks(works) {

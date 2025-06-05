@@ -285,6 +285,7 @@ footer nav ul {
   justify-content: center;
   gap: 10px;
   margin-bottom: 50px;
+  margin-top: 30px;
 }
 
 button {
@@ -415,12 +416,31 @@ input[type="password"] {
   justify-content: center;
   align-items: center;
   gap: 31px;
-  margin-bottom: 30px;
 }
 
-.portofolio__edition {
+.gallery{
+  margin-top: 30px;;
+}
+
+.portfolio-header {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.portfolio__edition {
+  display: none;
+  gap: 10px; 
+  align-items: center; 
+}
+
+.edition {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
 }
 
 .portfolio__edition a {

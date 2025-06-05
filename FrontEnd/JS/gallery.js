@@ -1,4 +1,4 @@
-import { fetchData } from "./call-API.js";
+import { fetchData } from "./call-api.js";
 import { API_BASE_URL } from "./login.js";
 import {
   renderWorks,

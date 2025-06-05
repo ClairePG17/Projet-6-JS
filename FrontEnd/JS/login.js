@@ -1,5 +1,5 @@
 import { form, errorMsg, handleLoginError } from "./utility-fonctions.js";
-import { authenticateUser } from "./call-API.js";
+import { authenticateUser } from "./call-api.js";
 
 export const API_BASE_URL = "http://localhost:5678/api";
 export const AUTH_TOKEN_KEY = "authToken";
@@ -13,8 +13,8 @@ export const AUTH_TOKEN_KEY = "authToken";
         password: form.password.value,
       });
 
-      localStorage.setItem(AUTH_TOKEN_KEY, token);
-      window.location.href = "administrateur.html";
+      sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+      window.location.href = "index.html";
       
     } catch (error) {
       handleLoginError(error, errorMsg);
