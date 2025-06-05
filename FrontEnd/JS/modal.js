@@ -254,6 +254,9 @@ export function setupModals() {
       updateModalGallery();
       addWorkForm.reset();
       imagePreview.src = "assets/icons/photo.png";
+      imagePreview.classList.remove("is-uploaded");
+
+      updatePhotoControlsVisibility();
     } catch (err) {
       if (err.message.includes("401")) {
         alert("Non autorisé. Veuillez vous reconnecter.");
