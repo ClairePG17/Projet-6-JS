@@ -1,6 +1,7 @@
 import { worksData } from "./gallery.js";
 import { API_BASE_URL, AUTH_TOKEN_KEY } from "./login.js";
 import { renderWorks } from "./utility-fonctions.js";
+import { fetchData } from "./call-api.js";
 
 let modal = null;
 let modal1, modal2, imageInput, imagePreview, chooseImageBtn, photoInfo, addWorkForm;
@@ -76,25 +77,24 @@ function addDeleteListeners() {
       const workId = figure.getAttribute("data-id");
 
       try {
-        const response = await fetch(`${API_BASE_URL}/works/${workId}`, {
+        const url = `${API_BASE_URL}/works/${workId}`;
+        const options = {
           method: "DELETE",
           headers: {
-            Authorization: "Bearer " + localStorage.getItem(AUTH_TOKEN_KEY),
+            Authorization: "Bearer " + sessionStorage.getItem(AUTH_TOKEN_KEY),
             Accept: "application/json",
           },
-        });
+        };
 
-        if (response.ok) {
-          figure.remove();
-          const index = worksData.findIndex((work) => work.id == workId);
-          if (index !== -1) worksData.splice(index, 1);
+        await fetchData(url, options);
 
-          renderWorks(worksData);
-        } else {
-          alert("Erreur lors de la suppression.");
-        }
+        figure.remove();
+        const index = worksData.findIndex((work) => work.id == workId);
+        if (index !== -1) worksData.splice(index, 1);
+
+        renderWorks(worksData);
       } catch (err) {
-        alert("Erreur réseau");
+        alert("Erreur lors de la suppression ou réseau");
       }
     });
   });
@@ -108,9 +108,9 @@ function updateModalGallery() {
 //Modal2 : form to add a work to the gallery
 async function populateCategoryDropdown() {
   try {
-    const response = await fetch(`${API_BASE_URL}/categories`);
-    if (!response.ok) throw new Error("Erreur lors du chargement des catégories");
-    const categories = await response.json();
+    const url = `${API_BASE_URL}/categories`;
+
+    const categories = await fetchData(url);
 
     const select = document.getElementById("cat");
 
@@ -239,40 +239,39 @@ export function setupModals() {
     formData.append("image", imageFile);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/works`, {
+      const url = `${API_BASE_URL}/works`;
+      const options = {
         method: "POST",
         headers: {
-          Authorization: "Bearer " + localStorage.getItem(AUTH_TOKEN_KEY),
+          Authorization: "Bearer " + sessionStorage.getItem(AUTH_TOKEN_KEY),
         },
         body: formData,
-      });
+      };
 
-      if (response.ok) {
-        const newWork = await response.json();
-        worksData.push(newWork);
-        renderWorks(worksData);
-        updateModalGallery();
-        addWorkForm.reset();
-        imagePreview.src = "assets/icons/photo.png";
-      } else if (response.status === 401) {
+      const newWork = await fetchData(url, options);
+      worksData.push(newWork);
+      renderWorks(worksData);
+      updateModalGallery();
+      addWorkForm.reset();
+      imagePreview.src = "assets/icons/photo.png";
+    } catch (err) {
+      if (err.message.includes("401")) {
         alert("Non autorisé. Veuillez vous reconnecter.");
       } else {
-        alert("Erreur lors de l'ajout du projet.");
+        alert("Erreur lors de l'ajout du projet ou réseau.");
       }
-    } catch (err) {
-      alert("Erreur réseau");
     }
-  });
 
-  // Reset add form (img + cat dropdown + layout)
-  addWorkForm.addEventListener("reset", function () {
-    imagePreview.src = "assets/icons/photo.png";
-    imagePreview.classList.remove("is-uploaded");
-    imageInput.value = "";
+    // Reset add form (img + cat dropdown + layout)
+    addWorkForm.addEventListener("reset", function () {
+      imagePreview.src = "assets/icons/photo.png";
+      imagePreview.classList.remove("is-uploaded");
+      imageInput.value = "";
 
-    const select = document.getElementById("cat");
-    select.selectedIndex = 0;
+      const select = document.getElementById("cat");
+      select.selectedIndex = 0;
 
-    updatePhotoControlsVisibility();
+      updatePhotoControlsVisibility();
+    });
   });
 }
