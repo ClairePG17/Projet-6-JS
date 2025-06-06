@@ -659,3 +659,9 @@ input[type="password"] {
 label::after {
   content: none;
 }
+
+.can-submit{
+  background-color: #1d6154;
+  border: #1d6154 solid 1px;
+  color: white;
+}

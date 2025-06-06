@@ -40,19 +40,19 @@ export function renderWorks(works) {
 }
 
 // 2. Creation Filter
+function createFilterButton(text, isActive = false) {
+  const button = document.createElement("button");
+  button.className = `filter-btn${isActive ? " active" : ""}`;
+  button.textContent = text;
+
+  return button;
+}
+
 export function renderFilterButtons(categories) {
   const filtersContainer = document.querySelector(".filters");
 
   // Table to link button <-> category
   const btnCategories = [];
-
-  function createFilterButton(text, isActive = false) {
-    const button = document.createElement("button");
-    button.className = `filter-btn${isActive ? " active" : ""}`;
-    button.textContent = text;
-
-    return button;
-  }
 
   // Filling the btnCategories table, (btn all is the one active by default)
   const btnTous = createFilterButton("Tous", true);

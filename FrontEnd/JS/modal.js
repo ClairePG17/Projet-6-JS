@@ -220,7 +220,24 @@ export function setupModals() {
     }
   });
 
-  // Submitting a project to add it
+  // Submitting a project to add it on the gallery : submitting button grey to green
+  function checkFormValidity() {
+    const submitButton = document.querySelector(".btn-ok");
+    const title = document.getElementById("titre").value.trim();
+    const category = document.getElementById("cat").value;
+    const imageFile = imageInput.files[0];
+
+    if (title && category && imageFile) {
+      submitButton.classList.add("can-submit");
+    } else {
+      submitButton.classList.remove("can-submit");
+    }
+  }
+
+  addWorkForm.addEventListener("input", checkFormValidity);
+  imageInput.addEventListener("change", checkFormValidity);
+
+  // Submitting a project to add it on the gallery : save a new work on the API
   addWorkForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -249,12 +266,14 @@ export function setupModals() {
       };
 
       const newWork = await fetchData(url, options);
+      const submitButton = document.querySelector(".btn-ok");
       worksData.push(newWork);
       renderWorks(worksData);
       updateModalGallery();
       addWorkForm.reset();
       imagePreview.src = "assets/icons/photo.png";
       imagePreview.classList.remove("is-uploaded");
+      submitButton.classList.remove("can-submit");
 
       updatePhotoControlsVisibility();
     } catch (err) {
@@ -270,6 +289,7 @@ export function setupModals() {
       imagePreview.src = "assets/icons/photo.png";
       imagePreview.classList.remove("is-uploaded");
       imageInput.value = "";
+      submitButton.classList.remove("can-submit");
 
       const select = document.getElementById("cat");
       select.selectedIndex = 0;

@@ -1,16 +1,3 @@
-import { API_BASE_URL } from "./login.js";
-
-export async function authenticateUser(credentials) {
-  const url = `${API_BASE_URL}/users/login`;
-  const options = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials),
-  };
-
-  return fetchData(url, options);
-}
-
 export async function fetchData(url, options = {}) {
   const response = await fetch(url, options);
 
