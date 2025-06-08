@@ -54,7 +54,7 @@ const closeModal = function (e) {
   modal = null;
 };
 
-//Modal1 : Delete work option
+//Modal1 : Show the galery and option to delete a work
 function renderImagesInModal() {
   const modalGallery = document.querySelector(".modal-gallery");
 
@@ -105,7 +105,7 @@ function updateModalGallery() {
   addDeleteListeners();
 }
 
-//Modal2 : form to add a work to the gallery
+//Modal2 : populate the category dropdown and form to add a work to the gallery
 async function populateCategoryDropdown() {
   try {
     const url = `${API_BASE_URL}/categories`;
@@ -138,7 +138,7 @@ async function populateCategoryDropdown() {
   }
 }
 
-// Function to show/hide button and paragraph
+// Function to show <--> hide button and paragraph
 function updatePhotoControlsVisibility() {
   if (imageInput.files.length > 0) {
     chooseImageBtn.style.display = "none";
@@ -220,7 +220,7 @@ export function setupModals() {
     }
   });
 
-  // Submitting a project to add it on the gallery : submitting button grey to green
+  // Submitting a project to add it on the gallery : submitting button grey <--> green
   function checkFormValidity() {
     const submitButton = document.querySelector(".btn-ok");
     const title = document.getElementById("titre").value.trim();
@@ -256,6 +256,7 @@ export function setupModals() {
     formData.append("image", imageFile);
 
     try {
+      const submitButton = document.querySelector(".btn-ok");
       const url = `${API_BASE_URL}/works`;
       const options = {
         method: "POST",
@@ -266,7 +267,8 @@ export function setupModals() {
       };
 
       const newWork = await fetchData(url, options);
-      const submitButton = document.querySelector(".btn-ok");
+      
+
       worksData.push(newWork);
       renderWorks(worksData);
       updateModalGallery();
@@ -274,7 +276,6 @@ export function setupModals() {
       imagePreview.src = "assets/icons/photo.png";
       imagePreview.classList.remove("is-uploaded");
       submitButton.classList.remove("can-submit");
-
       updatePhotoControlsVisibility();
     } catch (err) {
       if (err.message.includes("401")) {
