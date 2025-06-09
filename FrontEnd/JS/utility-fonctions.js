@@ -1,27 +1,6 @@
 export const form = document.querySelector(".login-container form");
 export const errorMsg = form ? form.querySelector(".error-message") : null;
-import {AUTH_TOKEN_KEY } from "./login.js";
-
-// Index page : layout <-> administrator
-export function displayAdmin() {
-  const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
-  const editionHeader = document.querySelector(".edition-mode");
-  const modifier = document.querySelector(".portfolio__edition");
-  const filters = document.querySelector(".filters");
-  const portfolioHeader = document.querySelector(".portfolio__header");
-
-  if (token) {
-    editionHeader.style.display = null;
-    modifier.style.display = "flex";
-    filters.style.display = "none";
-    portfolioHeader.classList.add("edition");
-  } else {
-    editionHeader.style.display = "none";
-    modifier.style.display = "none";
-    filters.style.display = "flex";
-    portfolioHeader.classList.remove("edition");
-  }
-}
+import { worksData } from "./gallery.js";
 
 // 1. Creation Gallery
 export function renderWorks(works) {
@@ -30,7 +9,7 @@ export function renderWorks(works) {
   gallery.innerHTML = works
     .map(
       (work) => `
-        <figure class="category-${work.categoryId}">
+        <figure class="gallery-item" data-category-id="${work.categoryId}">
           <img src="${work.imageUrl}" alt="${work.title}">
           <figcaption>${work.title}</figcaption>
         </figure>
@@ -76,13 +55,15 @@ export function renderFilterButtons(categories) {
 }
 
 function filterWorks(categoryId) {
-  document.querySelectorAll(".gallery figure").forEach((figure) => {
-    if (categoryId === "all" || figure.classList.contains(`category-${categoryId}`)) {
-      figure.style.display = "block";
-    } else {
-      figure.style.display = "none";
-    }
-  });
+  let filteredWorks;
+  if (categoryId === "all") {
+    filteredWorks = worksData;
+  } else {
+    filteredWorks = worksData.filter(
+      (work) => work.categoryId.toString() === categoryId.toString()
+    );
+  }
+  renderWorks(filteredWorks);
 }
 
 // 3. Errors management

@@ -81,7 +81,7 @@ function addDeleteListeners() {
         const options = {
           method: "DELETE",
           headers: {
-            Authorization: "Bearer " + sessionStorage.getItem(AUTH_TOKEN_KEY),
+            Authorization: "Bearer " + localStorage.getItem(AUTH_TOKEN_KEY),
             Accept: "application/json",
           },
         };
@@ -205,17 +205,29 @@ export function setupModals() {
 
   imageInput.addEventListener("change", function () {
     const file = imageInput.files[0];
-    if (file.type.startsWith("image/")) {
+    if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = function (e) {
         imagePreview.src = e.target.result;
         imagePreview.classList.add("is-uploaded");
-        updatePhotoControlsVisibility();
+  
+        // Create an object to read actual dimensions
+        const img = new Image();
+        img.onload = function() {
+          imagePreview.classList.remove("is-horizontal", "is-vertical");
+          if (img.naturalWidth > img.naturalHeight) {
+            imagePreview.classList.add("is-horizontal");
+          } else {
+            imagePreview.classList.add("is-vertical");
+          }
+          updatePhotoControlsVisibility();
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     } else {
       imagePreview.src = "assets/icons/photo.png";
-      imagePreview.classList.remove("is-uploaded");
+      imagePreview.classList.remove("is-uploaded", "is-horizontal", "is-vertical");
       updatePhotoControlsVisibility();
     }
   });
@@ -261,13 +273,12 @@ export function setupModals() {
       const options = {
         method: "POST",
         headers: {
-          Authorization: "Bearer " + sessionStorage.getItem(AUTH_TOKEN_KEY),
+          Authorization: "Bearer " + localStorage.getItem(AUTH_TOKEN_KEY),
         },
         body: formData,
       };
 
       const newWork = await fetchData(url, options);
-      
 
       worksData.push(newWork);
       renderWorks(worksData);

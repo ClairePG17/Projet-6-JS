@@ -418,8 +418,8 @@ input[type="password"] {
   gap: 31px;
 }
 
-.gallery{
-  margin-top: 30px;;
+.gallery {
+  margin-top: 30px;
 }
 
 .portfolio-header {
@@ -430,9 +430,8 @@ input[type="password"] {
 }
 
 .portfolio__edition {
-  display: none;
-  gap: 10px; 
-  align-items: center; 
+  gap: 10px;
+  align-items: center;
 }
 
 .edition {
@@ -612,10 +611,18 @@ input[type="password"] {
 }
 
 .add-photo .img .image-preview.is-uploaded {
+  object-fit: cover;
+  margin-top: 0;
+}
+
+.add-photo .img .image-preview.is-uploaded.is-vertical {
   width: 129px;
   height: 169px;
-  margin-top: 0;
-  object-fit: cover;
+}
+
+.add-photo .img .image-preview.is-uploaded.is-horizontal {
+  width: 420px;
+  height: 169px;
 }
 
 .add-photo .photo-info {
@@ -660,7 +667,7 @@ label::after {
   content: none;
 }
 
-.can-submit{
+.can-submit {
   background-color: #1d6154;
   border: #1d6154 solid 1px;
   color: white;
